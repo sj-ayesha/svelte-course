@@ -3,7 +3,8 @@
   import TextInput from "../UI/TextInput.svelte";
   import Button from "../UI/Button.svelte";
   import Modal from "../UI/Modal.svelte";
-  import { isEmpty, isValidEmail } from '../helpers/validation.js'
+  import { isEmpty, isValidEmail } from "../helpers/validation.js";
+  import meetups from "./meetups-store.js";
 
   let title = "";
   let titleValid = false;
@@ -27,23 +28,32 @@
   $: emailValid = !isValidEmail(email);
   $: descriptionValid = !isEmpty(description);
   $: imageUrlValid = !isEmpty(imageUrl);
-  $: formIsValid = titleValid && subtitleValid && addressValid && emailValid && descriptionValid && imageUrlValid;
+  $: formIsValid =
+    titleValid &&
+    subtitleValid &&
+    addressValid &&
+    emailValid &&
+    descriptionValid &&
+    imageUrlValid;
 
   function submitForm() {
-    {
-      dispatch("save", {
-        title: title,
-        subtitle: subtitle,
-        address: address,
-        email: email,
-        description: description,
-        imageUrl: imageUrl
-      });
-    }
+    const meetupData = {
+      title: title,
+      subtitle: subtitle,
+      description: description,
+      address: address,
+      imageUrl: imageUrl,
+      contact: email
+    };
+
+    //   meetups.push(newMeetup); //DOES NOT WORK
+    meetups.addMeetup(meetupData);
+
+    dispatch("save");
   }
 
   function cancel() {
-      dispatch('cancel');
+    dispatch("cancel");
   }
 </script>
 
@@ -115,7 +125,9 @@
       }} />
   </form>
   <div slot="footer">
-    <Button type="button" mode="outline" on:click="{cancel}">Cancel</Button>
-    <Button type="button" on:click="{submitForm}" disabled={!formIsValid}>Save</Button>
+    <Button type="button" mode="outline" on:click={cancel}>Cancel</Button>
+    <Button type="button" on:click={submitForm} disabled={!formIsValid}>
+      Save
+    </Button>
   </div>
 </Modal>
