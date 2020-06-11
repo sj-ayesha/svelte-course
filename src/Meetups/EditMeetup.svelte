@@ -6,6 +6,8 @@
   import { isEmpty, isValidEmail } from "../helpers/validation.js";
   import meetups from "./meetups-store.js";
 
+  export let id = null;
+
   let title = "";
   let titleValid = false;
   let subtitle = "";
@@ -19,6 +21,20 @@
   let imageUrl = "";
   let imageUrlValid = false;
   let formIsValid = false;
+
+  if (id) {
+    const unsubscribe = meetups.subscribe(items => {
+      const selectedMeetup = items.find(i => i.id === id);
+      title = selectedMeetup.title;
+      subtitle = selectedMeetup.subtitle;
+      address = selectedMeetup.address;
+      email = selectedMeetup.contact;
+      description = selectedMeetup.description;
+      imageUrl = selectedMeetup.imageUrl;
+    });
+
+    unsubscribe();
+  }
 
   let dispatch = createEventDispatcher();
 
@@ -46,14 +62,23 @@
       contact: email
     };
 
-    //   meetups.push(newMeetup); //DOES NOT WORK
-    meetups.addMeetup(meetupData);
+    if (id) {
+      meetups.updateMeetup(id, meetupData);
+    } else {
+      //   meetups.push(newMeetup); //DOES NOT WORK
+      meetups.addMeetup(meetupData);
+    }
 
     dispatch("save");
   }
 
   function cancel() {
     dispatch("cancel");
+  }
+
+  function deleteMeetup() {
+    meetups.deleteMeetup(id);
+    dispatch('save');
   }
 </script>
 
@@ -129,5 +154,8 @@
     <Button type="button" on:click={submitForm} disabled={!formIsValid}>
       Save
     </Button>
+    {#if id}
+      <Button type="button" on:click={deleteMeetup}>Delete</Button>
+    {/if}
   </div>
 </Modal>

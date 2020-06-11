@@ -94,12 +94,12 @@
   </div>
 
   <footer>
-    <Button href="mailto:{email}">Contact</Button>
+    <Button mode="outline" type="button" on:click={() => dispatch('edit', id)}>Edit</Button>
     <Button
       type="button"
       mode="outline"
       color={isFav ? null : 'success'}
       on:click={toggleFavorite}>{isFav ? 'Unfavorite' : 'Favorite'}</Button>
-    <Button type="button">Show Details</Button>
+    <Button type="button" on:click={() => dispatch('showdetails', id)}>Show Details</Button>
   </footer>
 </article>
